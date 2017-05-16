@@ -1,0 +1,46 @@
+{
+  "name": "serverless-plugin-tracing",
+  "version": "1.0.0",
+  "description": "Enables AWS X-Ray for entire Serverless stack or individual functions",
+  "main": "index.js",
+  "engines": {
+    "node": ">=4.0"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "coverage": "nyc report --reporter=lcov",
+    "coveralls-coverage": "nyc report --reporter=text-lcov | coveralls",
+    "lint": "eslint .",
+    "test": "nyc --all mocha --recursive ./test",
+    "posttest": "eslint ."
+  },
+  "keywords": [
+    "serverless",
+    "aws",
+    "tracing",
+    "trace",
+    "xray",
+    "x-ray"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexanderMS/serverless-plugin-tracing.git"
+  },
+  "author": "Alex Murashkin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AlexanderMS/serverless-plugin-tracing/issues"
+  },
+  "homepage": "https://github.com/AlexanderMS/serverless-plugin-tracing#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "coveralls": "^2.13.0",
+    "eslint": "^3.18.0",
+    "mocha": "^3.2.0",
+    "nyc": "^10.2.0",
+    "sinon": "^2.1.0"
+  }
+}

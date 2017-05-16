@@ -1,0 +1,8 @@
+test/
+coverage/
+.editorconfig
+.eslintignore
+.eslintrc
+.gitignore
+.npmignore
+.travis.yml
