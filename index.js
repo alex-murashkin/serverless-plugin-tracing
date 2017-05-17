@@ -1,8 +1,9 @@
 'use strict';
 
 module.exports = class TracingConfigPlugin {
-   constructor(serverless) {
+   constructor(serverless, options) {
      this.serverless = serverless;
+     this.options = options;
      this.aws = serverless.getProvider('aws');
      this.hooks = {
        'after:deploy:deploy': this.processTracing.bind(this)
@@ -11,9 +12,10 @@ module.exports = class TracingConfigPlugin {
 
    processTracing() {
      const service = this.serverless.service;
+     const stage = this.options.stage;
      const providerLevelTracingEnabled = (service.provider.tracing === true);
      Object.keys(service.functions).forEach(functionName => {
-        this.toggleTracing(`${service.service}-${service.provider.stage}-${functionName}`,
+        this.toggleTracing(`${service.service}-${stage}-${functionName}`,
           (service.functions[functionName].tracing === true)
           || (providerLevelTracingEnabled && service.functions[functionName].tracing !== false)
         );

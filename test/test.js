@@ -36,7 +36,8 @@ describe('serverless-plugin-tracing', function() {
       params.provider);
 
     serverlessInstance.service.functions = params.functions;
-    const plugin = new Plugin(serverlessInstance);
+    const options = { stage: 'test' };
+    const plugin = new Plugin(serverlessInstance, options);
     plugin.hooks['after:deploy:deploy'].call(plugin);
     return plugin;
   }
