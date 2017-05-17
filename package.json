@@ -14,7 +14,8 @@
     "coveralls-coverage": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint .",
     "test": "nyc --all mocha --recursive ./test",
-    "posttest": "eslint ."
+    "posttest": "eslint .",
+    "preversion": "update-contrib"
   },
   "keywords": [
     "serverless",
@@ -41,6 +42,7 @@
     "eslint": "^3.18.0",
     "mocha": "^3.2.0",
     "nyc": "^10.2.0",
-    "sinon": "^2.1.0"
+    "sinon": "^2.1.0",
+    "update-contributors": "^0.3.1"
   }
 }
