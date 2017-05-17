@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-tracing",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Enables AWS X-Ray for entire Serverless stack or individual functions",
   "main": "index.js",
   "engines": {

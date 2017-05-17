@@ -10,9 +10,9 @@ Note: this plugin is currently **Beta**.
 
 `npm install --save-dev serverless-plugin-tracing`
 
-Example:
+Example `serverless.yml`:
 
-```yml
+```yaml
 service: my-great-service
 
 provider:
@@ -39,6 +39,21 @@ functions:
 
 Output after `serverless deploy`:
 ```
-Serverless: Tracing ENABLED for function "my-great-service-test-mainFunction"
-Serverless: Tracing DISABLED for function "my-great-service-test-healthcheck"
+Serverless: Tracing ENABLED for function
+  "my-great-service-test-mainFunction"
+Serverless: Tracing DISABLED for function
+  "my-great-service-test-healthcheck"
 ```
+
+**Important**: in addition to using the plugin, you need to enable capturing
+traces in the code as well:
+
+```javascript
+const awsXRay = require('aws-xray-sdk');
+const awsSdk = awsXRay.captureAWS(require('aws-sdk'));
+```
+
+The plugin only controls the checkbox that be viewed in AWS Console:
+go to AWS Lambda -> select a Lambda function -> Configuration tab -> Advanced settings ->
+"Enable active tracing". If `tracing` ends up being `true` for a function,
+the checkbox will be checked for that function.
