@@ -8,6 +8,10 @@ Enables AWS X-Ray (https://aws.amazon.com/xray/) for entire Serverless stack or 
 
 Note: this plugin is currently **Beta**.
 
+Note: tested to work well with `serverless@1.13.2`. Some older versions of `serverless`
+may not work supported due to outdated Javascript SDK that
+does not support `TracingConfig`.
+
 `npm install --save-dev serverless-plugin-tracing`
 
 Example `serverless.yml`:
