@@ -14,17 +14,17 @@ module.exports = class TracingConfigPlugin {
      const service = this.serverless.service;
      const stage = this.options.stage;
      const providerLevelTracingEnabled = (service.provider.tracing === true);
-     Object.keys(service.functions).forEach(functionName => {
-        this.toggleTracing(`${service.service}-${stage}-${functionName}`,
+     return Promise.all(Object.keys(service.functions).map(functionName => {
+        return this.toggleTracing(`${service.service}-${stage}-${functionName}`,
           (service.functions[functionName].tracing === true)
           || (providerLevelTracingEnabled && service.functions[functionName].tracing !== false)
         );
-     });
+     }));
   }
 
   toggleTracing(functionName, isEnabled) {
     this.serverless.cli.log(`Tracing ${isEnabled ? 'ENABLED' : 'DISABLED'} for function "${functionName}"`);
-    this.aws.request('Lambda', 'updateFunctionConfiguration', {
+    return this.aws.request('Lambda', 'updateFunctionConfiguration', {
       FunctionName: functionName,
       TracingConfig: {
         Mode: isEnabled === true ? 'Active' : 'PassThrough'
