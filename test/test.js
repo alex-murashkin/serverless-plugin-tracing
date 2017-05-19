@@ -162,4 +162,29 @@ describe('serverless-plugin-tracing', function() {
       }
     ]);
   });
+
+  it('respects the name property', function() {
+    runPlugin({
+      functions: {
+        mainFunction: {
+          name: 'customName',
+          tracing: true
+        }
+      },
+      provider: {
+      }
+    });
+
+    assert.deepEqual(logSpy.getCall(0).args[0], 'Tracing ENABLED for function "customName"');
+    assert.deepEqual(requestSpy.getCall(0).args, [
+      'Lambda',
+      'updateFunctionConfiguration',
+      {
+        FunctionName: 'customName',
+        TracingConfig: {
+          Mode: 'Active'
+        }
+      }
+    ]);
+  });
 });
