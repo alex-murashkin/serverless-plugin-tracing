@@ -15,7 +15,8 @@ module.exports = class TracingConfigPlugin {
      const stage = this.options.stage;
      const providerLevelTracingEnabled = (service.provider.tracing === true);
      return Promise.all(Object.keys(service.functions).map(functionName => {
-        return this.toggleTracing(`${service.service}-${stage}-${functionName}`,
+        return this.toggleTracing(
+          service.functions[functionName].name || `${service.service}-${stage}-${functionName}`,
           (service.functions[functionName].tracing === true)
           || (providerLevelTracingEnabled && service.functions[functionName].tracing !== false)
         );
