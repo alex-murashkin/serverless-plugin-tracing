@@ -4,12 +4,12 @@
 [![CircleCI](https://circleci.com/gh/AlexanderMS/serverless-plugin-tracing.svg?style=shield)](https://circleci.com/gh/AlexanderMS/serverless-plugin-tracing)
 [![Coverage Status](https://coveralls.io/repos/github/AlexanderMS/serverless-plugin-tracing/badge.svg)](https://coveralls.io/github/AlexanderMS/serverless-plugin-tracing)
 
-Enables AWS X-Ray (https://aws.amazon.com/xray/) for entire Serverless stack or individual functions.
+Enables AWS X-Ray (https://aws.amazon.com/xray/) for the entire Serverless stack or individual functions.
 
 Note: this plugin is currently **Beta**.
 
 Note: tested to work well with `serverless@1.13.2`. Some older versions of `serverless`
-may not work supported due to outdated Javascript SDK that
+may not work due to outdated Javascript SDK that
 does not support `TracingConfig`.
 
 `npm install --save-dev serverless-plugin-tracing`
