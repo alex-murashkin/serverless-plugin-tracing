@@ -25,7 +25,7 @@ module.exports = class TracingConfigPlugin {
 
   toggleTracing(functionName, isEnabled) {
     this.serverless.cli.log(`Tracing ${isEnabled ? 'ENABLED' : 'DISABLED'} for function "${functionName}"`);
-    return this.options.noDeploy ? 'noop' : this.aws.request('Lambda', 'updateFunctionConfiguration', {
+    return this.options.noDeploy ? Promise.resolve(void 'noop') : this.aws.request('Lambda', 'updateFunctionConfiguration', {
       FunctionName: functionName,
       TracingConfig: {
         Mode: isEnabled === true ? 'Active' : 'PassThrough'
