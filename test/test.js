@@ -187,4 +187,33 @@ describe('serverless-plugin-tracing', function() {
       }
     ]);
   });
+
+  it('enables tracing when opt variable is "true"', function() {
+    runPlugin({
+      functions: {
+        healthcheck: {
+          tracing: 'false'
+        },
+        mainFunction: {
+          tracing: 'true'
+        }
+      },
+      provider: {
+        tracing: 'true'
+      }
+    });
+
+    assert.deepEqual(logSpy.getCall(0).args[0], 'Tracing DISABLED for function "myService-test-healthcheck"');
+    assert.deepEqual(logSpy.getCall(1).args[0], 'Tracing ENABLED for function "myService-test-mainFunction"');
+    assert.deepEqual(requestSpy.getCall(1).args, [
+      'Lambda',
+      'updateFunctionConfiguration',
+      {
+        FunctionName: 'myService-test-mainFunction',
+        TracingConfig: {
+          Mode: 'Active'
+        }
+      }
+    ]);
+  });
 });
