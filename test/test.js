@@ -36,7 +36,7 @@ describe('serverless-plugin-tracing', function() {
       params.provider);
 
     serverlessInstance.service.functions = params.functions;
-    const options = { stage: 'test' };
+    const options = { stage: 'test', noDeploy: params.noDeploy };
     const plugin = new Plugin(serverlessInstance, options);
     plugin.hooks['after:deploy:deploy'].call(plugin);
     return plugin;
@@ -215,5 +215,21 @@ describe('serverless-plugin-tracing', function() {
         }
       }
     ]);
+  });
+
+  it('noDeploy: enables tracing when function.tracing=true, but does not execute AWS request', function() {
+    runPlugin({
+      noDeploy: true,
+      functions: {
+        mainFunction: {
+          tracing: true
+        }
+      },
+      provider: {
+      }
+    });
+
+    assert.deepEqual(logSpy.getCall(0).args[0], 'Tracing ENABLED for function "myService-test-mainFunction"');
+    assert.isNull(requestSpy.getCall(0), 'no `aws.request`');
   });
 });
