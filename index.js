@@ -13,12 +13,13 @@ module.exports = class TracingConfigPlugin {
    processTracing() {
      const service = this.serverless.service;
      const stage = this.options.stage;
-     const providerLevelTracingEnabled = (service.provider.tracing === true);
+     const providerLevelTracingEnabled = (service.provider.tracing === true || service.provider.tracing === 'true');
      return Promise.all(Object.keys(service.functions).map(functionName => {
         return this.toggleTracing(
           service.functions[functionName].name || `${service.service}-${stage}-${functionName}`,
-          (service.functions[functionName].tracing === true)
-          || (providerLevelTracingEnabled && service.functions[functionName].tracing !== false)
+          service.functions[functionName].tracing === true
+          || service.functions[functionName].tracing === 'true'
+          || (providerLevelTracingEnabled && (service.functions[functionName].tracing !== false && service.functions[functionName].tracing !== 'false'))
         );
      }));
   }
