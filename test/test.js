@@ -6,11 +6,10 @@ const
   Plugin = require('../index');
 
 describe('serverless-plugin-tracing', function() {
-  let sandbox, logSpy, requestSpy, serverlessBaseInstance;
+  let sandbox, logSpy, serverlessBaseInstance;
   beforeEach(function() {
     sandbox = sinon.sandbox.create();
     logSpy = sandbox.spy();
-    requestSpy = sandbox.spy();
     serverlessBaseInstance = {
       service: {
         service: 'myService',
@@ -22,10 +21,7 @@ describe('serverless-plugin-tracing', function() {
       },
       cli: {
         log: logSpy
-      },
-      getProvider: () => ({
-        request: requestSpy
-      })
+      }
     };
   });
 
@@ -38,7 +34,7 @@ describe('serverless-plugin-tracing', function() {
     serverlessInstance.service.functions = params.functions;
     const options = { stage: 'test', noDeploy: params.noDeploy };
     const plugin = new Plugin(serverlessInstance, options);
-    plugin.hooks['after:deploy:deploy'].call(plugin);
+    plugin.hooks['package:compileEvents'].call(plugin);
     return plugin;
   }
 
@@ -47,7 +43,7 @@ describe('serverless-plugin-tracing', function() {
   });
 
   it('enables tracing when function.tracing=true', function() {
-    runPlugin({
+    const plugin = runPlugin({
       functions: {
         healthcheck: {
         },
@@ -56,36 +52,17 @@ describe('serverless-plugin-tracing', function() {
         }
       },
       provider: {
+        compiledCloudFormationTemplate: require('./cf-template-basic.json')
       }
     });
 
     assert.deepEqual(logSpy.getCall(0).args[0], 'Tracing DISABLED for function "myService-test-healthcheck"');
     assert.deepEqual(logSpy.getCall(1).args[0], 'Tracing ENABLED for function "myService-test-mainFunction"');
-    assert.deepEqual(requestSpy.getCall(0).args, [
-      'Lambda',
-      'updateFunctionConfiguration',
-      {
-        FunctionName: 'myService-test-healthcheck',
-        TracingConfig: {
-          Mode: 'PassThrough'
-        }
-      }
-    ]);
-
-    assert.deepEqual(requestSpy.getCall(1).args, [
-      'Lambda',
-      'updateFunctionConfiguration',
-      {
-        FunctionName: 'myService-test-mainFunction',
-        TracingConfig: {
-          Mode: 'Active'
-        }
-      }
-    ]);
+    assert.deepEqual(plugin.serverless.service.provider.compiledCloudFormationTemplate, require('./cf-template-basic-enabled-one.json'));
   });
 
   it('enables tracing when provider.tracing=true', function() {
-    runPlugin({
+    const plugin = runPlugin({
       functions: {
         healthcheck: {
         },
@@ -94,102 +71,18 @@ describe('serverless-plugin-tracing', function() {
         }
       },
       provider: {
-        tracing: true
+        tracing: true,
+        compiledCloudFormationTemplate: require('./cf-template-basic.json')
       }
     });
 
     assert.deepEqual(logSpy.getCall(0).args[0], 'Tracing ENABLED for function "myService-test-healthcheck"');
     assert.deepEqual(logSpy.getCall(1).args[0], 'Tracing ENABLED for function "myService-test-mainFunction"');
-    assert.deepEqual(requestSpy.getCall(0).args, [
-      'Lambda',
-      'updateFunctionConfiguration',
-      {
-        FunctionName: 'myService-test-healthcheck',
-        TracingConfig: {
-          Mode: 'Active'
-        }
-      }
-    ]);
-
-    assert.deepEqual(requestSpy.getCall(1).args, [
-      'Lambda',
-      'updateFunctionConfiguration',
-      {
-        FunctionName: 'myService-test-mainFunction',
-        TracingConfig: {
-          Mode: 'Active'
-        }
-      }
-    ]);
-  });
-
-  it('does not enable tracing when provider.tracing=true but function.tracing=false', function() {
-    runPlugin({
-      functions: {
-        healthcheck: {
-          tracing: false
-        },
-        mainFunction: {
-          tracing: true
-        }
-      },
-      provider: {
-        tracing: true
-      }
-    });
-
-    assert.deepEqual(logSpy.getCall(0).args[0], 'Tracing DISABLED for function "myService-test-healthcheck"');
-    assert.deepEqual(logSpy.getCall(1).args[0], 'Tracing ENABLED for function "myService-test-mainFunction"');
-    assert.deepEqual(requestSpy.getCall(0).args, [
-      'Lambda',
-      'updateFunctionConfiguration',
-      {
-        FunctionName: 'myService-test-healthcheck',
-        TracingConfig: {
-          Mode: 'PassThrough'
-        }
-      }
-    ]);
-
-    assert.deepEqual(requestSpy.getCall(1).args, [
-      'Lambda',
-      'updateFunctionConfiguration',
-      {
-        FunctionName: 'myService-test-mainFunction',
-        TracingConfig: {
-          Mode: 'Active'
-        }
-      }
-    ]);
-  });
-
-  it('respects the name property', function() {
-    runPlugin({
-      functions: {
-        mainFunction: {
-          name: 'customName',
-          tracing: true
-        }
-      },
-      provider: {
-      }
-    });
-
-    assert.deepEqual(logSpy.getCall(0).args[0], 'Tracing ENABLED for function "customName"');
-    assert.deepEqual(requestSpy.getCall(0).args, [
-      'Lambda',
-      'updateFunctionConfiguration',
-      {
-        FunctionName: 'customName',
-        TracingConfig: {
-          Mode: 'Active'
-        }
-      }
-    ]);
+    assert.deepEqual(plugin.serverless.service.provider.compiledCloudFormationTemplate, require('./cf-template-basic-enabled-both.json'));
   });
 
   it('enables tracing when opt variable is "true"', function() {
-    runPlugin({
+    const plugin = runPlugin({
       functions: {
         healthcheck: {
           tracing: 'false'
@@ -199,37 +92,68 @@ describe('serverless-plugin-tracing', function() {
         }
       },
       provider: {
-        tracing: 'true'
+        tracing: 'true',
+        compiledCloudFormationTemplate: require('./cf-template-basic.json')
       }
     });
 
     assert.deepEqual(logSpy.getCall(0).args[0], 'Tracing DISABLED for function "myService-test-healthcheck"');
     assert.deepEqual(logSpy.getCall(1).args[0], 'Tracing ENABLED for function "myService-test-mainFunction"');
-    assert.deepEqual(requestSpy.getCall(1).args, [
-      'Lambda',
-      'updateFunctionConfiguration',
-      {
-        FunctionName: 'myService-test-mainFunction',
-        TracingConfig: {
-          Mode: 'Active'
-        }
-      }
-    ]);
+    assert.deepEqual(plugin.serverless.service.provider.compiledCloudFormationTemplate, require('./cf-template-basic-enabled-one.json'));
   });
 
-  it('noDeploy: enables tracing when function.tracing=true, but does not execute AWS request', function() {
-    runPlugin({
-      noDeploy: true,
+  it('does not enable tracing when provider.tracing=true but function.tracing=false', function() {
+    const plugin = runPlugin({
       functions: {
+        healthcheck: {
+          tracing: false
+        },
         mainFunction: {
           tracing: true
         }
       },
       provider: {
+        tracing: true,
+        compiledCloudFormationTemplate: require('./cf-template-basic.json')
       }
     });
 
-    assert.deepEqual(logSpy.getCall(0).args[0], 'Tracing ENABLED for function "myService-test-mainFunction"');
-    assert.isNull(requestSpy.getCall(0), 'no `aws.request`');
+    assert.deepEqual(logSpy.getCall(0).args[0], 'Tracing DISABLED for function "myService-test-healthcheck"');
+    assert.deepEqual(logSpy.getCall(1).args[0], 'Tracing ENABLED for function "myService-test-mainFunction"');
+    assert.deepEqual(plugin.serverless.service.provider.compiledCloudFormationTemplate, require('./cf-template-basic-enabled-one.json'));
+  });
+
+  it('respects the name property', function() {
+    const plugin = runPlugin({
+      functions: {
+        mainFunction: {
+          name: 'custom-name',
+          tracing: true
+        }
+      },
+      provider: {
+        compiledCloudFormationTemplate: require('./cf-template-custom-name.json')
+      }
+    });
+
+    assert.deepEqual(logSpy.getCall(0).args[0], 'Tracing ENABLED for function "custom-name"');
+    assert.deepEqual(plugin.serverless.service.provider.compiledCloudFormationTemplate, require('./cf-template-custom-name-enabled.json'));
+  });
+
+  it('does not change functions that could not be found', function() {
+    const plugin = runPlugin({
+      functions: {
+        mainFunction: {
+          name: 'notFound',
+          tracing: true
+        }
+      },
+      provider: {
+        compiledCloudFormationTemplate: require('./cf-template-custom-name.json')
+      }
+    });
+
+    assert.deepEqual(logSpy.getCall(0).args[0], 'Tracing NOT SET for function "notFound" as couldn\'t find it in Cloud Formation template');
+    assert.deepEqual(plugin.serverless.service.provider.compiledCloudFormationTemplate, require('./cf-template-custom-name-not-changed.json'));
   });
 });
