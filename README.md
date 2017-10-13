@@ -6,6 +6,9 @@
 
 Enables AWS X-Ray (https://aws.amazon.com/xray/) for the entire Serverless stack or individual functions.
 
+**Update**: as of `2.0.0`, plugin uses Cloud Formation to update `TracingConfig` and no longer
+makes additional AWS SDK calls.
+
 Note: this plugin is currently **Beta**.
 
 Note: tested to work well with `serverless@1.13.2`. Some older versions of `serverless`
