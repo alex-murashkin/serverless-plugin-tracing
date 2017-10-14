@@ -1,8 +1,8 @@
 # serverless-plugin-tracing
 
 [![npm version](https://badge.fury.io/js/serverless-plugin-tracing.svg)](https://badge.fury.io/js/serverless-plugin-tracing)
-[![CircleCI](https://circleci.com/gh/AlexanderMS/serverless-plugin-tracing.svg?style=shield)](https://circleci.com/gh/AlexanderMS/serverless-plugin-tracing)
-[![Coverage Status](https://coveralls.io/repos/github/AlexanderMS/serverless-plugin-tracing/badge.svg)](https://coveralls.io/github/AlexanderMS/serverless-plugin-tracing)
+[![CircleCI](https://circleci.com/gh/alex-murashkin/serverless-plugin-tracing.svg?style=shield)](https://circleci.com/gh/alex-murashkin/serverless-plugin-tracing)
+[![Coverage Status](https://coveralls.io/repos/github/AlexanderMS/serverless-plugin-tracing/badge.svg)](https://coveralls.io/github/alex-murashkin/serverless-plugin-tracing)
 
 Enables AWS X-Ray (https://aws.amazon.com/xray/) for the entire Serverless stack or individual functions.
 
