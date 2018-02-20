@@ -40,7 +40,7 @@ plugins:
 functions:
   mainFunction: # inherits tracing settings from "provider"
     handler: src/app/index.handler
-  healthcheck:
+  healthCheckFunction:
     tracing: false # overrides provider settings (opt out)
 ```
 
