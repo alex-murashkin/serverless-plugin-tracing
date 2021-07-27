@@ -1,5 +1,7 @@
 'use strict';
 
+const PLUGIN_NAME = 'serverless-plugin-tracing';
+
 module.exports = class TracingConfigPlugin {
    constructor(serverless, options) {
      this.serverless = serverless;
@@ -7,6 +9,21 @@ module.exports = class TracingConfigPlugin {
      this.hooks = {
        'package:compileEvents': this.processTracing.bind(this)
      };
+
+     // Validate the schema, required in serverless 2.x and above
+     if (this.serverless.configSchemaHandler.defineCustomProperties) {
+       this.serverless.configSchemaHandler.defineCustomProperties({
+         type: 'object',
+         properties: {
+           [PLUGIN_NAME]: {
+             type: 'object',
+             properties: {
+               tracing: { type: 'boolean' }
+             }
+           }
+         }
+       });
+     }
    }
 
    processTracing() {
@@ -22,7 +39,7 @@ module.exports = class TracingConfigPlugin {
         return acc;
       }, {});
      const stage = this.options.stage;
-     const providerLevelTracingEnabled = (service.provider.tracing === true || service.provider.tracing === 'true');
+     const providerLevelTracingEnabled = (service.custom[PLUGIN_NAME].tracing === true || service.custom[PLUGIN_NAME].tracing === 'true');
      return Promise.all(Object.keys(service.functions).map(functionName => {
         return this.toggleTracing(
           service.functions[functionName].name || `${service.service}-${stage}-${functionName}`,
