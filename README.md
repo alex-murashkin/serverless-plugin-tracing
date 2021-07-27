@@ -25,7 +25,6 @@ service: my-great-service
 provider:
   name: aws
   stage: test
-  tracing: true # enable tracing
   iamRoleStatements:
     - Effect: "Allow" # xray permissions (required)
       Action:
@@ -36,6 +35,10 @@ provider:
 
 plugins:
   - serverless-plugin-tracing
+
+custom:
+  serverless-plugin-tracing:
+    tracing: true # enable tracing
 
 functions:
   mainFunction: # inherits tracing settings from "provider"
